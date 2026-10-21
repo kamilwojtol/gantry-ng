@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
+import Task from '../../../types/task';
 
 @Component({
   imports: [],
@@ -6,4 +7,6 @@ import { Component } from '@angular/core';
   styleUrl: './board-task.css',
   templateUrl: './board-task.html',
 })
-export class BoardTask {}
+export class BoardTask {
+  task = input<Task>();
+}

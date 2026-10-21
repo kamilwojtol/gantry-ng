@@ -1,1 +1,5 @@
-<p>board works!</p>
+<div class="flex justify-center align-items w-screen h-screen gap-4 p-4">
+  <app-board-status title="To do" [tasks]="tasks" />
+  <app-board-status title="In progress" [tasks]="tasks" />
+  <app-board-status title="Done" [tasks]="tasks" />
+</div>
