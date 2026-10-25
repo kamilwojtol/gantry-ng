@@ -1,1 +1,184 @@
-<p>task-manager works!</p>
+<div class="w-full min-h-screen p-4 sm:p-6 lg:p-8 bg-gray-100 dark:bg-zinc-950 transition-colors">
+  <div class="max-w-7xl mx-auto space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+          Menedżer zadań
+        </h1>
+        <p class="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Przeglądaj, filtruj i zarządzaj wszystkimi zadaniami w jednym miejscu
+        </p>
+      </div>
+
+      <!-- Quick Metrics -->
+      <div class="flex items-center gap-2">
+        <div
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 text-xs text-gray-600 dark:text-gray-300 shadow-2xs"
+        >
+          <span class="font-semibold text-gray-900 dark:text-white">{{ counts().all }}</span>
+          <span>Wszystkie</span>
+        </div>
+        <div
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sky-50 dark:bg-sky-950/40 border border-sky-200 dark:border-sky-900 text-xs text-sky-700 dark:text-sky-300 shadow-2xs"
+        >
+          <span class="font-semibold">{{ counts().inProgress }}</span>
+          <span>W toku</span>
+        </div>
+        <div
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900 text-xs text-emerald-700 dark:text-emerald-300 shadow-2xs"
+        >
+          <span class="font-semibold">{{ counts().done }}</span>
+          <span>Zrobione</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters Bar -->
+    <div
+      class="flex flex-col md:flex-row md:items-center justify-between gap-3 p-4 bg-white dark:bg-zinc-900 rounded-xl border border-gray-200 dark:border-zinc-800 shadow-2xs"
+    >
+      <!-- Search Input -->
+      <div class="relative flex-1 max-w-md">
+        <input
+          type="text"
+          [ngModel]="searchTerm()"
+          (ngModelChange)="searchTerm.set($event)"
+          placeholder="Szukaj zadania lub osoby..."
+          class="w-full pl-9 pr-4 py-2 rounded-lg border border-gray-200 dark:border-zinc-700 bg-gray-50/70 dark:bg-zinc-800/70 text-xs sm:text-sm text-gray-900 dark:text-gray-100 placeholder:text-gray-400 focus:outline-hidden focus:ring-2 focus:ring-sky-500 transition"
+        />
+        <div
+          class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="w-4 h-4"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Status Filters -->
+      <div class="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0">
+        <button
+          type="button"
+          (click)="selectedStatus.set('all')"
+          [class.bg-sky-600]="selectedStatus() === 'all'"
+          [class.text-white]="selectedStatus() === 'all'"
+          [class.bg-gray-100]="selectedStatus() !== 'all'"
+          [class.dark:bg-zinc-800]="selectedStatus() !== 'all'"
+          [class.text-gray-700]="selectedStatus() !== 'all'"
+          [class.dark:text-gray-300]="selectedStatus() !== 'all'"
+          class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+        >
+          Wszystkie ({{ counts().all }})
+        </button>
+        <button
+          type="button"
+          (click)="selectedStatus.set('To do')"
+          [class.bg-sky-600]="selectedStatus() === 'To do'"
+          [class.text-white]="selectedStatus() === 'To do'"
+          [class.bg-gray-100]="selectedStatus() !== 'To do'"
+          [class.dark:bg-zinc-800]="selectedStatus() !== 'To do'"
+          [class.text-gray-700]="selectedStatus() !== 'To do'"
+          [class.dark:text-gray-300]="selectedStatus() !== 'To do'"
+          class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+        >
+          Do zrobienia ({{ counts().todo }})
+        </button>
+        <button
+          type="button"
+          (click)="selectedStatus.set('In progress')"
+          [class.bg-sky-600]="selectedStatus() === 'In progress'"
+          [class.text-white]="selectedStatus() === 'In progress'"
+          [class.bg-gray-100]="selectedStatus() !== 'In progress'"
+          [class.dark:bg-zinc-800]="selectedStatus() !== 'In progress'"
+          [class.text-gray-700]="selectedStatus() !== 'In progress'"
+          [class.dark:text-gray-300]="selectedStatus() !== 'In progress'"
+          class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+        >
+          W trakcie ({{ counts().inProgress }})
+        </button>
+        <button
+          type="button"
+          (click)="selectedStatus.set('Done')"
+          [class.bg-sky-600]="selectedStatus() === 'Done'"
+          [class.text-white]="selectedStatus() === 'Done'"
+          [class.bg-gray-100]="selectedStatus() !== 'Done'"
+          [class.dark:bg-zinc-800]="selectedStatus() !== 'Done'"
+          [class.text-gray-700]="selectedStatus() !== 'Done'"
+          [class.dark:text-gray-300]="selectedStatus() !== 'Done'"
+          class="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors cursor-pointer"
+        >
+          Zakończone ({{ counts().done }})
+        </button>
+      </div>
+    </div>
+
+    <!-- Task List -->
+    <div
+      class="bg-white dark:bg-zinc-900 rounded-xl border border-gray-200 dark:border-zinc-800 overflow-hidden shadow-2xs divide-y divide-gray-200 dark:divide-zinc-800"
+    >
+      @for (task of filteredTasks(); track task.id) {
+        <div
+          class="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-gray-50/60 dark:hover:bg-zinc-800/40 transition-colors"
+        >
+          <div class="space-y-1">
+            <div class="flex items-center gap-2.5">
+              <span class="text-xs font-mono text-gray-400">#{{ task.id }}</span>
+              <h3 class="text-sm font-semibold text-gray-900 dark:text-gray-100">
+                {{ task.title }}
+              </h3>
+            </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400 max-w-2xl">
+              {{ task.description }}
+            </p>
+          </div>
+
+          <div class="flex items-center gap-3 shrink-0">
+            <!-- Status Badge -->
+            <span
+              [class.bg-gray-100]="task.status === 'To do'"
+              [class.text-gray-700]="task.status === 'To do'"
+              [class.dark:bg-zinc-800]="task.status === 'To do'"
+              [class.dark:text-gray-300]="task.status === 'To do'"
+              [class.bg-sky-100]="task.status === 'In progress'"
+              [class.text-sky-700]="task.status === 'In progress'"
+              [class.dark:bg-sky-950/60]="task.status === 'In progress'"
+              [class.dark:text-sky-300]="task.status === 'In progress'"
+              [class.bg-emerald-100]="task.status === 'Done'"
+              [class.text-emerald-700]="task.status === 'Done'"
+              [class.dark:bg-emerald-950/60]="task.status === 'Done'"
+              [class.dark:text-emerald-300]="task.status === 'Done'"
+              class="px-2.5 py-1 rounded-md text-xs font-medium"
+            >
+              {{ task.status }}
+            </span>
+
+            <!-- Assignee Chip -->
+            <div
+              class="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-zinc-800 px-2 py-1 rounded-md border border-gray-200 dark:border-zinc-700"
+            >
+              <div
+                class="w-4 h-4 rounded-full bg-sky-500 text-white text-[9px] flex items-center justify-center font-bold"
+              >
+                {{ task.assignee.slice(0, 1) }}
+              </div>
+              <span class="hidden sm:inline">{{ task.assignee }}</span>
+            </div>
+          </div>
+        </div>
+      } @empty {
+        <div class="p-12 text-center text-gray-400 dark:text-zinc-500 text-sm">
+          Brak zadań spełniających wybrane kryteria wyszukiwania.
+        </div>
+      }
+    </div>
+  </div>
+</div>
