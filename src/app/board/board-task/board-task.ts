@@ -9,5 +9,5 @@ import { CdkDrag } from '@angular/cdk/drag-drop';
   templateUrl: './board-task.html',
 })
 export class BoardTask {
-  task = input<Task>();
+  readonly task = input.required<Task>();
 }

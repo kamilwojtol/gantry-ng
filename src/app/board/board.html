@@ -1,31 +1,11 @@
-<div class="flex justify-center align-items w-screen h-screen gap-4 p-4">
-  <mat-grid-list cols="3" rowHeight="1:1" gutterSize="16px" class="w-full h-full">
-    <mat-grid-tile>
+<div cdkDropListGroup class="w-full min-h-screen p-6 bg-gray-100 dark:bg-zinc-950">
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto items-start">
+    @for (column of columns; track column.status) {
       <app-board-status
-        title="To do"
-        [tasks]="todoTasks"
-        cdkDropListGroup
-        #listOne="cdkDropList"
-        [cdkDropListConnectedTo]="[listTwo]"
+        [status]="column.status"
+        [tasks]="column.tasks()"
+        (taskDropped)="drop($event)"
       />
-    </mat-grid-tile>
-    <mat-grid-tile>
-      <app-board-status
-        title="In progress"
-        [tasks]="inProgressTasks"
-        cdkDropListGroup
-        #listTwo="cdkDropList"
-        [cdkDropListConnectedTo]="[listOne, listThree]"
-      />
-    </mat-grid-tile>
-    <mat-grid-tile>
-      <app-board-status
-        title="Done"
-        [tasks]="doneTasks"
-        cdkDropListGroup
-        #listThree="cdkDropList"
-        [cdkDropListConnectedTo]="[listOne, listTwo]"
-      />
-    </mat-grid-tile>
-  </mat-grid-list>
+    }
+  </div>
 </div>
